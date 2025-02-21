@@ -11,7 +11,7 @@ ADMIN_ID = 6929210318
 accounts = {}
 
 # File ID của video gửi khi bấm /start
-VIDEO_FILE_ID = "BAACAgUAAxkBAANJZ7iuAhZHJ0GTT94hL8xsXB9qVTAAAuoUAALWbMhVScbxD431vVs2BA"
+VIDEO_FILE_ID = "BAACAgUAAxkBAAIBRGe4t9Lhs8ieOR5fc29x_YdF-KUqAALrFgACim3JVaHzo7dizxFTNgQ"
 
 # Link ảnh QR để nạp tiền
 QR_IMAGE_URL = "https://i.postimg.cc/YSgHpX2H/d4d5ece1-9476-4cec-a70c-fb71326aef0c.jpg"
