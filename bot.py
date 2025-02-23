@@ -11,7 +11,7 @@ ADMIN_ID = 6929210318
 accounts = {}
 
 # File ID của video gửi khi bấm /start
-VIDEO_FILE_ID = "BAACAgUAAxkBAAIBRGe4t9Lhs8ieOR5fc29x_YdF-KUqAALrFgACim3JVaHzo7dizxFTNgQ"
+VIDEO_FILE_ID = "BAACAgUAAxkBAANJZ7iuAhZHJ0GTT94hL8xsXB9qVTAAAuoUAALWbMhVScbxD431vVs2BA"
 
 # Link ảnh QR để nạp tiền
 QR_IMAGE_URL = "https://i.postimg.cc/YSgHpX2H/d4d5ece1-9476-4cec-a70c-fb71326aef0c.jpg"
@@ -32,16 +32,22 @@ def send_welcome(message):
 🎉 Chào mừng bạn! UID của bạn là {user_id}. Hãy gửi UID cho @Vmmod11 và nhập lệnh /qr để lấy mã QR nạp tiền.
 
 💰 GIÁ NIÊM YẾT:
-🔹 30.000 VND - Bao gồm:
-✔️ File + Phím tắt auto reset IP
-✔️ ID Shadow + Config
-🎁 TẶNG: Locket Gold + HDSD
+🔹 30.000 VND/tháng 
+🔹 150.000 VND/năm (TẶNG Locket Gold và Spotify Pre )
+💁 BAO GỒM:
+⚡️ FILE + HDSD 
+⚡️ PHÍM TẮT AUTO RESET IP
+⚡️ ID SHADOWROCKET 
+⚡️ TẶNG Locket Gold và Spotify Pre (VIP)
 
 📌 Các lệnh có thể sử dụng:
 /tk - Kiểm tra số dư tài khoản
-/buy - Mua gói dịch vụ
-/nap - Nạp tiền vào tài khoản (Chỉ admin)
 /qr - Nhận mã QR nạp tiền
+/buyadr - Mua gói dịch tháng vụ cho Android 
+/buyios - Mua gói dịch tháng vụ cho iOS
+/buyadrvip - Mua gói VIP năm cho Android
+/buyiosvip - Mua gói VIP năm cho iOS
+/nap - Nạp tiền vào tài khoản (Chỉ admin)
     """)
 
 # Lệnh /qr - Gửi ảnh QR từ link
@@ -56,34 +62,92 @@ def check_account(message):
     balance = get_balance(user_id)
     bot.send_message(message.chat.id, f"💰 Tài khoản UID {user_id}: Số dư hiện tại là {balance} VNĐ.")
 
-# Lệnh /nap - Admin nạp tiền cho user
-@bot.message_handler(regexp=r"^/nap (\d+) (\d+)$")
-def nap_tien(message):
-    if message.from_user.id == ADMIN_ID:
-        uid, so_tien = message.text.split()[1:3]
-        so_tien = int(so_tien)
-        update_balance(int(uid), so_tien)
-        bot.send_message(message.chat.id, f"✅ Đã nạp {so_tien} VNĐ cho UID {uid}.")
-    else:
-        bot.send_message(message.chat.id, "❌ Bạn không có quyền sử dụng lệnh này!")
+# Lệnh /nap - Nạp tiền vào tài khoản
+@bot.message_handler(commands=['nap'])
+def add_balance(message):
+    if message.from_user.id != ADMIN_ID:
+        bot.send_message(message.chat.id, "🙅‍♂️ Bạn không có quyền sử dụng lệnh này.❌")
+        return
+    
+    try:
+        _, uid, amount = message.text.split()
+        uid = int(uid)
+        amount = int(amount)
+        update_balance(uid, amount)
+        bot.send_message(message.chat.id, f"🎲 Đã nạp {amount} VNĐ vào tài khoản UID {uid}.")
+        
+        # Thông báo cho người dùng được nạp tiền
+        bot.send_message(uid, f"🎉 Tài khoản của bạn đã được admin nạp {amount} VNĐ! Số dư hiện tại của bạn là {get_balance(uid)} VNĐ.")
+        
+    except ValueError:
+        bot.send_message(message.chat.id, "🙅‍♂️ Sai cú pháp! Vui lòng nhập lệnh đúng định dạng: /nap <UID> <Số tiền>❌")
 
-# Lệnh /buy - Mua sản phẩm
-@bot.message_handler(commands=['buy'])
-def buy_product(message):
+# Các lệnh mua hàng
+def process_purchase(message, price, image_url, caption):
     user_id = message.from_user.id
-    cost = 30000
     balance = get_balance(user_id)
+    if balance < price:
+        bot.send_message(message.chat.id, "🙅‍♂️ Số dư không đủ! Vui lòng nạp thêm tiền.❌")
+        return
+    update_balance(user_id, -price)
+    bot.send_photo(message.chat.id, image_url, caption=caption)
 
-    if balance >= cost:
-        update_balance(user_id, -cost)
-        bot.send_message(message.chat.id, f"✅ Bạn đã mua hàng thành công! Số dư còn lại: {get_balance(user_id)} VNĐ")
+@bot.message_handler(commands=['buyios'])
+def buy_ios(message):
+    process_purchase(message, 35000, "https://i.postimg.cc/mgt2wDjp/photo-2025-02-23-15-29-22.jpg", 
+    """🙇 Cảm ơn quý khách đã ủng hộ VMmod
+📲 Hãy lưu và dán vào V2ray để sử dụng
+⚠️ Lưu ý dò đúng IP
+❤️ Mãi YÊUUUUUUUUUU
 
-        # Gửi ảnh sau khi mua
-        product_photo = "https://i.postimg.cc/G2tGvHZR/photo-2025-02-22-00-01-44.jpg"
-        bot.send_photo(message.chat.id, product_photo, caption="🔑 Nhập vào shadow để sử dụng!")
-    else:
-        bot.send_message(message.chat.id, f"❌ Số dư không đủ! Số dư hiện tại của bạn là {balance} VNĐ.")
+📍 Miền bắc 5 215 216
+📍 Miền trung 215 216 19
+📍 Miền nam 19 125
+📍 Shadowrocket ID FREE: https://idapple.htpn.vn/share.php
+📍 Phím tắt AUTO RESET IP: https://www.icloud.com/shortcuts/d626e1053f494de9b5e03bfd29cd1240
+📍 Anh chị cần LOCKET GOLD và SPOTIFY PREMIUM thì ib em Việt @Vmmod11""")
+
+@bot.message_handler(commands=['buyiosvip'])
+def buy_iosvip(message):
+    process_purchase(message, 150000, "https://i.postimg.cc/MGkGswv7/photo-2025-02-23-16-44-39.jpg",
+    """🙇 Cảm ơn quý khách đã ủng hộ VMmod
+📲 Hãy lưu và dán vào V2ray để sử dụng
+⚠️ Lưu ý dò đúng IP
+❤️ Mãi YÊUUUUUUUUUU
+
+📍 Miền bắc 5 215 216
+📍 Miền trung 215 216 19
+📍 Miền nam 19 125
+📍 Shadowrocket ID FREE: https://idapple.htpn.vn/share.php
+📍 Phím tắt AUTO RESET IP: https://www.icloud.com/shortcuts/d626e1053f494de9b5e03bfd29cd1240
+🎁 Tặng module: LOCKET GOLD VÀ SPOTIFY PRE
+🔗 LOCKET GOLD: [MODULE](https://raw.githubusercontent.com/quocchienn/lockcrack/refs/heads/module/Locket_Gold.sgmodule)
+🎵 SPOTIFY PRE: [MODULE](https://yfamily.vercel.app/module/spotifyVIP.module)""")
+
+@bot.message_handler(commands=['buyadr'])
+def buy_adr(message):
+    process_purchase(message, 35000, "https://i.postimg.cc/nhXk44Ds/nh-ch-p-m-n-h-nh-2025-02-23-170903.png", 
+    """🙇 Cảm ơn quý khách đã ủng hộ VMmod
+📲 Hãy lưu và dán vào V2ray để sử dụng
+⚠️ Lưu ý dò đúng IP
+❤️ Mãi YÊUUUUUUUUUU
+
+📍 Miền bắc 5 215 216
+📍 Miền trung 215 216 19
+📍 Miền nam 19 125""")
+
+@bot.message_handler(commands=['buyadrvip'])
+def buy_adrvip(message):
+    process_purchase(message, 150000, "https://i.postimg.cc/nhXk44Ds/nh-ch-p-m-n-h-nh-2025-02-23-170903.png", 
+    """🙇 Cảm ơn quý khách đã ủng hộ VMmod
+📲 Hãy lưu và dán vào V2ray để sử dụng
+⚠️ Lưu ý dò đúng IP
+❤️ Mãi YÊUUUUUUUUUU
+
+📍 Miền bắc 5 215 216
+📍 Miền trung 215 216 19
+📍 Miền nam 19 125""")
 
 # Chạy bot
 bot.polling()
-print("Bot đã cập nhật phiên bản mới")
+print("Bot đã cập nhật phiên bản mới") 
