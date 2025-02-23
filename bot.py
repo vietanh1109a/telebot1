@@ -94,7 +94,7 @@ def process_purchase(message, price, image_url, caption):
 
 @bot.message_handler(commands=['buyios'])
 def buy_ios(message):
-    process_purchase(message, 35000, "https://i.postimg.cc/mgt2wDjp/photo-2025-02-23-15-29-22.jpg", 
+    process_purchase(message, 30000, "https://i.postimg.cc/mgt2wDjp/photo-2025-02-23-15-29-22.jpg", 
     """🙇 Cảm ơn quý khách đã ủng hộ VMmod
 📲 Hãy lưu và dán vào V2ray để sử dụng
 ⚠️ Lưu ý dò đúng IP
@@ -126,7 +126,7 @@ def buy_iosvip(message):
 
 @bot.message_handler(commands=['buyadr'])
 def buy_adr(message):
-    process_purchase(message, 35000, "https://i.postimg.cc/nhXk44Ds/nh-ch-p-m-n-h-nh-2025-02-23-170903.png", 
+    process_purchase(message, 30000, "https://i.postimg.cc/nhXk44Ds/nh-ch-p-m-n-h-nh-2025-02-23-170903.png", 
     """🙇 Cảm ơn quý khách đã ủng hộ VMmod
 📲 Hãy lưu và dán vào V2ray để sử dụng
 ⚠️ Lưu ý dò đúng IP
